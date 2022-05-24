@@ -8,7 +8,13 @@ function putSymbol, takes location and symbol as inputs and changes the array
 accordingly. calls changeturn function
 
 return array, return putSymbol function
-*/
+*/  
+
+const removeAllChildNodes = (parent) => {
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild);
+}
+};
 
 let gameBoard = function () {
   let grid = [0, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -22,48 +28,13 @@ let gameBoard = function () {
 }();
 
 
+let displayController = function (player1, player2){
 
-
-/*
-gameflow object
-
-private function renderDom. using gameBoard array, renders squares with
-event listeners that have unique data-id depending on the array number they are 
-given.
-
-function that runs in case event listener is triggered and checks if the 
-square is busy or not, if not it calls putSymbol, passes location and symbol
-to put in. 
-
-sets private variable "players turn" which determines whos turn it is. 
-
-public function that changes whose turn it is and calls renderDOM.
-
-function that creates first player 
-function that creates second player
-
-*/
-
-const player = function (name, symbol) {
-  return {name, symbol}
-};
-
-let displayController = function (){
-
-
-  let player1 = player("jack", "X")
-  let player2 = player("bob", "O")
   let playerTurn = player1;
 
   const boardContainer = document.querySelector("#board-container");
 
-  const removeAllChildNodes = (parent) => {
-    while (parent.firstChild) {
-        parent.removeChild(parent.firstChild);
-    }
-  }
-
-  const renderDom = function () {
+  const renderBoard = function () {
     removeAllChildNodes(boardContainer);
     gameBoard.grid.forEach(element => {
       let square = document.createElement("div");
@@ -86,20 +57,63 @@ let displayController = function (){
     else {
       playerTurn = player1;
     }
-  }
+  };
 
   const moveMade = function(event) {
     const location = event.target.dataset.id;
     const symbol = playerTurn.symbol;
     gameBoard.putSymbol(location, symbol);
     changeTurn();
-    renderDom();
-  }
-  renderDom();
-}();
+    renderBoard();
+  };
+
+  renderBoard();
+};
 
 
+const displayForm = () => {
+  let player1;
+  let player2;
 
+  const startGame = () => {
+    if (nameInput1.value !== "" && nameInput2.value !== ""){
+    let playerName1 = nameInput1.value;
+    let playerName2 = nameInput2.value;
+    player1 = Player(playerName1, "X");
+    player2 = Player(playerName2, "O");
+    displayController(player1, player2);
+    };
+  };
+
+  //cache DOM
+  const boardContainer = document.querySelector("#board-container");
+  const startForm = document.createElement("form");
+  const nameInput1 = document.createElement("input")
+  const nameInput2 = document.createElement("input")
+  const startGameButton = document.createElement("button");
+
+  //set attributes to dom
+  startForm.classList.add("name-form");
+  nameInput1.setAttribute("type", "text");
+  nameInput1.classList.add("name-input");
+  nameInput2.setAttribute("type", "text");
+  nameInput2.classList.add("name-input");
+  startGameButton.setAttribute("id", "start-game");
+  startGameButton.setAttribute("type", "button");
+
+  //add event listeners
+  startGameButton.addEventListener("click", startGame)
+
+  //createform
+  startForm.appendChild(nameInput1);
+  startForm.appendChild(nameInput2);
+  startForm.appendChild(startGameButton);
+  boardContainer.appendChild(startForm);
+
+  const Player = (name, symbol) => {
+    return {name, symbol}
+  };  
+};
 
 /*
 player object 
