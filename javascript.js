@@ -17,20 +17,30 @@ const removeAllChildNodes = (parent) => {
 };
 
 let gameBoard = function () {
-  let grid = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  let grid = [0, 1, 2, 
+              3, 4, 5, 
+              6, 7, 8];
 
   const putSymbol = function(location, symbol) {
     grid[location] = symbol;
     //nextTurn();
   };
 
-  return {grid, putSymbol}
+  const clearBoard = () => {
+    grid = [0, 1, 2, 
+            3, 4, 5, 
+            6, 7, 8];
+  }
+
+  return {grid, putSymbol, clearBoard}
 }();
 
 
 let displayController = function (player1, player2){
 
   let playerTurn = player1;
+  let rep = 0;
+  let winnerDetermined = false;
 
   const boardContainer = document.querySelector("#board-container");
 
@@ -41,10 +51,12 @@ let displayController = function (player1, player2){
       square.dataset.id = gameBoard.grid.indexOf(element);
       square.classList.add("square")
       if (typeof element === "number"){
+        if (winnerDetermined === false){
         square.addEventListener("click", moveMade);
+        }
       }
       else {
-        square.innerHTML = element;
+        square.innerText = element;
       }
       boardContainer.appendChild(square);
     });
@@ -63,9 +75,54 @@ let displayController = function (player1, player2){
     const location = event.target.dataset.id;
     const symbol = playerTurn.symbol;
     gameBoard.putSymbol(location, symbol);
-    changeTurn();
+    rep += 1;
+    checkWin ();
     renderBoard();
+    changeTurn();
   };
+
+  const checkWin = () => {
+    let message = "";
+    if (
+      (gameBoard.grid[0] === gameBoard.grid[1] && gameBoard.grid[1] === gameBoard.grid[2]) 
+    ||(gameBoard.grid[3] === gameBoard.grid[4] && gameBoard.grid[4] === gameBoard.grid[5])
+    ||(gameBoard.grid[6] === gameBoard.grid[7] && gameBoard.grid[7] === gameBoard.grid[8])
+    ||(gameBoard.grid[0] === gameBoard.grid[3] && gameBoard.grid[3] === gameBoard.grid[6])
+    ||(gameBoard.grid[1] === gameBoard.grid[4] && gameBoard.grid[4] === gameBoard.grid[7])
+    ||(gameBoard.grid[2] === gameBoard.grid[5] && gameBoard.grid[5] === gameBoard.grid[8])
+    ||(gameBoard.grid[0] === gameBoard.grid[4] && gameBoard.grid[4] === gameBoard.grid[8])
+    ||(gameBoard.grid[2] === gameBoard.grid[4] && gameBoard.grid[4] === gameBoard.grid[6])
+    ) {
+      if (playerTurn === player1) {
+        player1.winner = true;
+        console.log(`${player1.name} is the winner`);
+        winnerDetermined = true;
+        //message
+      }
+      else {
+        player2.winner = true;
+        console.log(`${player2.name} is the winner`)
+        winnerDetermined = true;
+        //message
+      }
+    } else if (rep === 9){
+      console.log(`its a draw`)
+      winnerDetermined = true;
+      //draw
+    };
+  }
+  
+  const playAgain = () => {
+
+  };
+
+  const newGame = () => {
+
+  }
+
+  const gameEnd = (message) => {
+    
+  }
 
   renderBoard();
 };
@@ -111,7 +168,8 @@ const displayForm = () => {
   boardContainer.appendChild(startForm);
 
   const Player = (name, symbol) => {
-    return {name, symbol}
+    let winner = false
+    return {name, symbol, winner}
   };  
 };
 
