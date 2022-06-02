@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="node_modules/normalize.css/">
   <link rel="stylesheet" href="./style.css">
   <script src="./javascript.js" defer></script>
   <title>Tic Tac Toe</title>
@@ -12,13 +13,23 @@
   <div class="header">
     <h1 class="greetings">Welcome to Tic Tac Toe</h1>
   </div>
-  <div id="board-container">
-
-  </div>
-  <div id="ui-container">
-    <h3>Choose your opponent</h3>
-    <button id="player-player">Player vs Player</button>
-    <button id="player-ai">Player vs AI</button>
+  <div class="content-container">
+    <div class="board-container">
+      <div class="square o">O</div>
+      <div class="square x">X</div>
+      <div class="square x">X</div>
+      <div class="square x">X</div>
+      <div class="square o">O</div>
+      <div class="square o">O</div>
+      <div class="square o">O</div>
+      <div class="square x">X</div>
+      <div class="square x">X</div>
+    </div>
+    <div id="ui-container">
+      <h3>Choose your opponent</h3>
+      <button id="player-player">PLAYER VS PLAYER</button>
+      <button id="player-ai">PLAYER VS AI</button>
+    </div>
   </div>
 </body>
 </html>

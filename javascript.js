@@ -47,15 +47,17 @@ const displayController = function (plr1, plr2){
   let winnerDetermined = false;
   let message = "";
 
-  const boardContainer = document.querySelector("#board-container");
+  const boardContainer = document.querySelector(".board-container");
   const uiContainer = document.querySelector("#ui-container");
 
   const renderBoard = function () {
     removeAllChildNodes(boardContainer);
+    boardContainer.classList.add("bigger");
     gameBoard.grid.forEach(element => {
       let square = document.createElement("div");
       square.dataset.id = gameBoard.grid.indexOf(element);
       square.classList.add("square")
+      square.classList.add("big-square")
       if (typeof element === "number"){
         if (winnerDetermined === false){
         square.addEventListener("click", moveMade);
@@ -63,6 +65,12 @@ const displayController = function (plr1, plr2){
       }
       else {
         square.innerText = element;
+        if (element === "X") {
+          square.classList.add("x")
+        }
+        else {
+          square.classList.add("o")
+        }
       }
       boardContainer.appendChild(square);
     });
@@ -103,13 +111,13 @@ const displayController = function (plr1, plr2){
     ||(gameBoard.grid[2] === gameBoard.grid[4] && gameBoard.grid[4] === gameBoard.grid[6])
     ) {
       if (playerTurn === player1) {
-        player1.winner = true;
+        player1.timesWon += 1;
         message = `${player1.name} is the winner`;
         winnerDetermined = true;
         //message
       }
       else {
-        player2.winner = true;
+        player2.timesWon += 1;
         message = `${player2.name} is the winner`
         winnerDetermined = true;
         //message
@@ -128,9 +136,14 @@ const displayController = function (plr1, plr2){
   message = "";
   removeAllChildNodes(boardContainer);
   removeAllChildNodes(uiContainer);
+  displayWinCount();
   };
   
-
+  const displayWinCount = () => {
+    let message = document.createElement("h3");
+    message.innerText = `${player1.name}: ${player1.timesWon}  ${player2.name}: ${player2.timesWon}`
+    uiContainer.appendChild(message);
+  }
   const playAgain = () => {
     clearGame();
     gameBoard.clearBoard();
@@ -147,7 +160,7 @@ const displayController = function (plr1, plr2){
     let playAgainBtn = document.createElement("button")
     playAgainBtn.setAttribute("id", "play-again");
     playAgainBtn.setAttribute("type", "button");
-    playAgainBtn.innerText = "Play Again"
+    playAgainBtn.innerText = "Next Round"
     playAgainBtn.addEventListener("click", playAgain);
     let newPlayersBtn = document.createElement("button")
     newPlayersBtn.setAttribute("id", "new-Players");
@@ -158,7 +171,7 @@ const displayController = function (plr1, plr2){
     uiContainer.appendChild(playAgainBtn);
     uiContainer.appendChild(newPlayersBtn);
   }
-
+  displayWinCount();
   renderBoard();
 };
 
@@ -182,11 +195,13 @@ const displayForm = () => {
   //cache DOM
   const uiContainer = document.querySelector("#ui-container");
   const startForm = document.createElement("form");
-  const nameInput1 = document.createElement("input")
-  const nameInput1Label = document.createElement("label")
-  const nameInput2 = document.createElement("input")
-  const nameInput2Label = document.createElement("label")
+  const nameInput1 = document.createElement("input");
+  const nameInput1Label = document.createElement("label");
+  const nameInput1Div = document.createElement("div");
+  const nameInput2 = document.createElement("input");
+  const nameInput2Label = document.createElement("label");
   const startGameButton = document.createElement("button");
+  const nameInput2Div = document.createElement("div");
 
   //set attributes to dom
   startForm.classList.add("name-form");
@@ -194,14 +209,14 @@ const displayForm = () => {
   nameInput1.setAttribute("type", "text");
   nameInput1.setAttribute("id", "name-input-1");
   nameInput1Label.setAttribute("id", "name-input-1");
-  nameInput1Label.innerText = "X Player Name"
-  nameInput1.classList.add("name-input");
+  nameInput1Label.innerText = "X Player Name: "
+  nameInput1Div.classList.add("name-input")
 
   nameInput2.setAttribute("type", "text");
   nameInput2.setAttribute("id", "name-input-2");
   nameInput2Label.setAttribute("id", "name-input-2");
-  nameInput2Label.innerText = "O Player Name"
-  nameInput2.classList.add("name-input");
+  nameInput2Label.innerText = "O Player Name: "
+  nameInput2Div.classList.add("name-input")
 
   startGameButton.setAttribute("id", "start-game");
   startGameButton.setAttribute("type", "button");
@@ -212,17 +227,19 @@ const displayForm = () => {
 
   //createform
   removeAllChildNodes(uiContainer);
-  startForm.appendChild(nameInput1Label);
-  startForm.appendChild(nameInput1);
-  startForm.appendChild(nameInput2Label);
-  startForm.appendChild(nameInput2);
+  nameInput1Div.appendChild(nameInput1Label);
+  nameInput1Div.appendChild(nameInput1);
+  nameInput2Div.appendChild(nameInput2Label);
+  nameInput2Div.appendChild(nameInput2);
+  startForm.appendChild(nameInput1Div);
+  startForm.appendChild(nameInput2Div);
   startForm.appendChild(startGameButton);
   uiContainer.appendChild(startForm);
 
   const Player = (name, symbol) => {
-    let winner = false
-    return {name, symbol, winner}
-  };    
+    let timesWon = 0;
+    return {name, symbol, timesWon}
+  };
 
 };
 
