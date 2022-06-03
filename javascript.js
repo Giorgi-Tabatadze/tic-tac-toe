@@ -16,6 +16,10 @@ const removeAllChildNodes = (parent) => {
 }
 };
 
+function randomIntFromInterval(min, max) { // min and max included 
+  return Math.floor(Math.random() * (max - min + 1) + min)
+}
+
 const gameBoard = function () {
   let grid = [0, 1, 2, 
               3, 4, 5, 
@@ -35,9 +39,14 @@ const gameBoard = function () {
   return {grid, putSymbol, clearBoard}
 }();
 
+const boardContainer = document.querySelector(".board-container");
+const uiContainer = document.querySelector("#ui-container");
 
 
-const displayController = function (plr1, plr2){
+
+
+
+const displayController = function (plr1, plr2, aiGame){
   //cache players
   player1 = plr1;
   player2 = plr2;
@@ -46,9 +55,7 @@ const displayController = function (plr1, plr2){
   let rep = 0;
   let winnerDetermined = false;
   let message = "";
-
-  const boardContainer = document.querySelector(".board-container");
-  const uiContainer = document.querySelector("#ui-container");
+  let aiStatus = aiGame;
 
   const renderBoard = function () {
     removeAllChildNodes(boardContainer);
@@ -60,7 +67,7 @@ const displayController = function (plr1, plr2){
       square.classList.add("big-square")
       if (typeof element === "number"){
         if (winnerDetermined === false){
-        square.addEventListener("click", moveMade);
+        square.addEventListener("click", getLocation);
         }
       }
       else {
@@ -84,10 +91,24 @@ const displayController = function (plr1, plr2){
       playerTurn = player1;
     }
   };
+  
+  const getLocation = (event) => {
+    let location;
+    let symbol;
 
-  const moveMade = function(event) {
-    const location = event.target.dataset.id;
-    const symbol = playerTurn.symbol;
+    if (aiStatus && playerTurn === player2) {
+      location = aiMove()
+    }
+    else {
+    location = event.target.dataset.id;
+    }
+    symbol = playerTurn.symbol;
+
+    moveMade(location,symbol);
+  }
+
+
+  const moveMade = function(location, symbol) {
     gameBoard.putSymbol(location, symbol);
     rep += 1;
     checkWin ();
@@ -97,7 +118,21 @@ const displayController = function (plr1, plr2){
       return;
     }
     changeTurn();
+    if (aiStatus){
+    getLocation();
+    };
   };
+
+  const aiMove = () => {
+    let index;
+    do {
+      index = randomIntFromInterval(0, 8);
+      if (typeof gameBoard.grid[index] === "number"){
+        return index;
+      };
+    }
+    while (typeof gameBoard.grid[index] !== "number")
+};
 
   const checkWin = () => {
     if (
@@ -176,10 +211,8 @@ const displayController = function (plr1, plr2){
 };
 
 
-const displayForm = () => {
-  let player1;
-  let player2;
 
+const displayForm = () => {
 
   const startGame = () => {
     if (nameInput1.value !== "" && nameInput2.value !== ""){
@@ -193,7 +226,6 @@ const displayForm = () => {
   };
 
   //cache DOM
-  const uiContainer = document.querySelector("#ui-container");
   const startForm = document.createElement("form");
   const nameInput1 = document.createElement("input");
   const nameInput1Label = document.createElement("label");
@@ -235,18 +267,30 @@ const displayForm = () => {
   startForm.appendChild(nameInput2Div);
   startForm.appendChild(startGameButton);
   uiContainer.appendChild(startForm);
-
-  const Player = (name, symbol) => {
-    let timesWon = 0;
-    return {name, symbol, timesWon}
-  };
-
 };
+
+let player1;
+let player2;
+
+const Player = (name, symbol) => {
+  let timesWon = 0;
+  return {name, symbol, timesWon}
+};
+
 
 const newGame = (() => {
   const playerVsPlayer = document.getElementById("player-player");
   const playerVsAi = document.getElementById("player-ai");
+
+  const startAiGame = () => {
+    player1 = Player("Human", "X")
+    player2 = Player("AI", "O")
+
+    removeAllChildNodes(uiContainer);
+    displayController(player1, player2, true)
+  }
   playerVsPlayer.addEventListener("click", displayForm);
+  playerVsAi.addEventListener("click", startAiGame)
 })();
 
 
